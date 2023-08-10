@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "cross-env NODE_ENV=production node server",
-    "dev": "cross-env NODE_ENV=development nodemon server"
+    "dev": "concurrently \"cross-env NODE_ENV=development nodemon server\" \"cd ../frontend && npm run dev\""
   },
   "repository": {
     "type": "git",
@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/umershabir/mentoring-backend#readme",
   "dependencies": {
+    "concurrently": "^8.2.0",
     "connect-mongo": "^5.0.0",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",

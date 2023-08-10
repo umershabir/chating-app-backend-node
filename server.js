@@ -1,40 +1,35 @@
-const path = require("path");
+// const path = require("path");
 const express = require("express");
 const dotenv = require("dotenv");
-const { engine } = require("express-handlebars"); // Corrected import statement
 const morgan = require("morgan");
-const passport = require("passport");
-const session = require("express-session");
+//
+const User = require("./mentees/models/signUp.js");
+//
 const connectDB = require("./config/db");
-// passport config
-require("./config/passport")(passport);
+
 // load config
 dotenv.config({ path: "./config/config.env" });
+
 connectDB();
+
 const app = express();
+app.use(express.json());
+// console.log(bilkl);
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
-
-// handlers
-app.engine(".hbs", engine({ defaultLayout: "main", extname: ".hbs" }));
-app.set("view engine", ".hbs");
-// session middleware
-app.use(
-  session({
-    secret: "keyboard cat",
-    resave: false,
-    saveUninitialized: true,
-    // cookie: { secure: true },
-  })
-);
-// passport middleware
-app.use(passport.initialize());
-app.use(passport.session());
-// static folder
-app.use(express.static(path.join(__dirname, "public")));
-// Routes
-app.use("/", require("./routes/index"));
+app.post("/signup", (req, res) => {
+  console.log(req.data);
+  const newMentee = new User({
+    fullName: req.body.fullName,
+    userName: req.body.userName,
+    email: req.body.email,
+    password: req.body.password,
+  });
+  newMentee.save();
+  return res.status(200).json({ msg: newMentee });
+});
 app.listen();
+
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, console.log("server is running " + process.env.NODE_ENV));
+app.listen(PORT, console.log("Server is running " + process.env.NODE_ENV));
