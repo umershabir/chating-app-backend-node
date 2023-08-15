@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "cross-env NODE_ENV=production node server",
+    "production": "cross-env NODE_ENV=production node server",
+    "start": "cross-env NODE_ENV=development nodemon server",
     "dev": "concurrently \"cross-env NODE_ENV=development nodemon server\" \"cd ../frontend && npm run dev\""
   },
   "repository": {

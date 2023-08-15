@@ -27,7 +27,7 @@ app.post("/signup", (req, res) => {
     password: req.body.password,
   });
   newMentee.save();
-  return res.status(200).json({ msg: newMentee });
+  return res.status(201).json({ message: "Account created successfully!" });
 });
 app.listen();
 
