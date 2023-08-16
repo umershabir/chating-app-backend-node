@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 // user signup schema
-const SignupSchema = new Schema({
+const menteesSignupScheema = new Schema({
   fullName: {
     type: String,
     required: true,
@@ -10,16 +10,17 @@ const SignupSchema = new Schema({
   userName: {
     type: String,
     required: true,
-    unique: true,
+    unique: [true, "user name is already exsit"],
   },
   email: {
     type: String,
     required: true,
-    unique: true,
+    unique: [true, "This email is already registered"],
   },
   password: {
     type: String,
     required: true,
+    unique: false,
   },
   date: {
     type: Date,
@@ -28,4 +29,5 @@ const SignupSchema = new Schema({
   },
 });
 // console.log(mongoose.model("User", SignupSchema));
-module.exports = MenteeSignup = mongoose.model("User", SignupSchema);
+module.exports =
+  mongoose.model.Mentees || mongoose.model("Mentees", menteesSignupScheema);
