@@ -44,6 +44,7 @@ app.post("/signup", (req, res) => {
 });
 // login
 app.post("/login", (req, res) => {
+  console.log(req.body.email);
   MenteesSignUpModal.findOne({ email: req.body.email })
     .then((user) => {
       if (user.password !== req.body.password) {
