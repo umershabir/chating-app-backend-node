@@ -32,7 +32,8 @@ if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
 app.post("/signup", (req, res) => {
-  console.log(req.data);
+  // console.log(req);
+  console.log(req.body);
   const newMentee = new MenteesSignUpModal({
     fullName: req.body.fullName,
     userName: req.body.userName,
