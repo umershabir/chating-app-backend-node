@@ -6,7 +6,9 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const auth = require("./helper/auth");
 // models
-const MenteesSignUpModal = require("./mentees/models/signUp.js");
+const MenteesModel = require("./mentees/models/index");
+const Mentee = require("./mentees/models/Mentee");
+const M = require("./mentors/model/signUp");
 //
 const connectDB = require("./config/db");
 // load config
@@ -31,7 +33,8 @@ app.use(express.json());
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
-app.post("/signup", (req, res) => {
+// mentees sign up
+app.post("/mentee/signup", (req, res) => {
   // console.log(req);
   console.log(req.body);
   const newMentee = new MenteesSignUpModal({
@@ -39,19 +42,38 @@ app.post("/signup", (req, res) => {
     userName: req.body.userName,
     email: req.body.email,
     password: req.body.password,
+    type: req.body.type,
   });
-  newMentee.save();
-  return res.status(201).json({ message: "Account created successfully!" });
+  newMentee.save().then(() => {
+    const token = jwt.sign(
+      {
+        userEmail: req.body.email,
+      },
+      "RANDOM-TOKEN",
+      { expiresIn: "24h" }
+    );
+    res.status(200).send({
+      message: "signup Successfully",
+      response: {
+        user: {
+          email: req.body.email,
+          name: req.body.fullName,
+          type: req.body.type,
+        },
+        token,
+      },
+    });
+  });
+  // return res.status(201).json({ message: "Account created successfully!" });
 });
-// login
-app.post("/login", (req, res) => {
+// mentees sign in
+app.post("/mentee/signin", (req, res) => {
   console.log(req.body.email);
   MenteesSignUpModal.findOne({ email: req.body.email })
     .then((user) => {
       if (user.password !== req.body.password) {
         return res.status(400).send({
           message: "Password does not match",
-          error,
         });
       }
       const token = jwt.sign(
@@ -64,7 +86,10 @@ app.post("/login", (req, res) => {
       );
       res.status(200).send({
         message: "Login Successfully",
-        email: user.email,
+        response: {
+          email: user.email,
+          type: user.type,
+        },
         token,
       });
     })
@@ -75,11 +100,96 @@ app.post("/login", (req, res) => {
       });
     });
 });
-app.get("/free-endpoint", (req, res) => {
-  res.json({ message: "you are free to access" });
+// mentors sign up
+app.post("/mentor/signup", (req, res) => {
+  // console.log(req);
+  console.log(req.body);
+  const newMentor = new MentorsSignupScheema({
+    fullName: req.body.fullName,
+    userName: req.body.userName,
+    email: req.body.email,
+    password: req.body.password,
+    category: req.body.category,
+    type: req.body.type,
+  });
+  newMentor.save().then(() => {
+    const token = jwt.sign(
+      {
+        userEmail: req.body.email,
+      },
+      "RANDOM-TOKEN",
+      { expiresIn: "24h" }
+    );
+    res.status(200).send({
+      message: "signup Successfully",
+      response: {
+        user: {
+          email: req.body.email,
+          name: req.body.fullName,
+          type: req.body.type,
+        },
+        token,
+      },
+    });
+  });
+  // return res.status(201).json({ message: "Account created successfully!" });
 });
-app.get("/auth-endpoint", auth, (req, res) => {
-  res.json({ message: "you are authorized to access me" });
+// mentors sign in
+app.post("/mentor/signin", (req, res) => {
+  MentorsSignupScheema.findOne({ email: req.body.email })
+    .then((user) => {
+      if (user.password !== req.body.password) {
+        return res.status(400).send({
+          message: "password does not match",
+        });
+      }
+      const token = jwt.sign(
+        {
+          userId: user._id,
+          userEmail: user.email,
+        },
+        "RANDOM-TOKEN",
+        {
+          expiresIn: "24h",
+        }
+      );
+      res.status(200).send({
+        message: "Login Successfully",
+        response: {
+          email: user.email,
+          type: user.type,
+        },
+        token,
+      });
+    })
+    .catch((err) => {
+      res.status(400).send({
+        message: "email does not registered",
+        err,
+      });
+    });
+});
+app.get("/categories", auth, (req, res) => {
+  res.json({
+    message: "you are authorized to access me",
+    response: [
+      {
+        title: "software developers",
+      },
+      {
+        title: "fashion",
+      },
+      {
+        title: "showbees",
+      },
+      {
+        title: "media",
+      },
+      {
+        title: "enterprenure / business",
+      },
+    ],
+  });
 });
 app.listen();
 
