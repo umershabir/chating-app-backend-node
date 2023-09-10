@@ -13,7 +13,7 @@ const M = require("./mentors/model/signUp");
 const connectDB = require("./config/db");
 // load config
 dotenv.config({ path: "./config/config.env" });
-
+// connecting to DB
 connectDB();
 const app = express();
 app.use((req, res, next) => {
