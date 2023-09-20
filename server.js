@@ -3,6 +3,7 @@ import { connectDB } from "./DB/index.js";
 import express from "express";
 import dotenv from "dotenv";
 import morgan from "morgan";
+import loginSignupRoutes from "./src/signUp/route.js";
 // import userRouter from "./mentees/routes/user";
 // load config
 dotenv.config({ path: "./config/config.env" });
@@ -29,6 +30,8 @@ app.use(express.json());
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
+// signup / login routes of users
+app.use("/auth", loginSignupRoutes);
 // listening to our app
 app.listen();
 // running the app on environment port
